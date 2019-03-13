@@ -65,14 +65,14 @@
 })();
 
 
-<a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
-class="message js-navigation-open" data-pjax="true"
-href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3">
-  DI-459 Send device_id to Currents for install/uninstall events (
-</a>
+// <a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
+// class="message js-navigation-open" data-pjax="true"
+// href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3">
+//   DI-459 Send device_id to Currents for install/uninstall events (
+// </a>
 
-<a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
-class="message js-navigation-open" data-pjax="true"
-href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3"></a>
-  <a href="blah">DI-459</a> <a href="oroginal">Send device_id to Currents for install/uninstall events (
-</a>
+// <a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
+// class="message js-navigation-open" data-pjax="true"
+// href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3"></a>
+//   <a href="blah">DI-459</a> <a href="oroginal">Send device_id to Currents for install/uninstall events (
+// </a>
