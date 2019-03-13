@@ -12,16 +12,54 @@
 (function() {
   'use strict';
 
-  const titles = document.getElementsByClassName('js-issue-title')
-  const mainTitle = titles[0]
-  const newHtml = mainTitle.innerHTML.replace(
-    /[A-Z]{2}-\d{3}/gi,
-    (match) => {
-      console.log(match)
-      return `<a target="_blank" href="https://jira.braze.com/browse/${match}">${match}</a>`
+  const beta = false;
+  const verbose = false;
+
+  const linkColor = "#0366d6";
+  // const linkColor = "rgb(215, 63, 133)"
+
+  // dropbox link for all
+  const classNameWhitelist = [
+    ".js-issue-title", // PR title 2x
+    ".comment-body", // PR body
+    ".commit.full-commit .commit-title", // specific commit link
+  ];
+
+  const classNameWhitelistExtended = [
+    ".message.js-navigation-open", // list of commits
+    ".js-issue-row", // list of PRs
+  ];
+
+  const classNames = beta ? classNameWhitelist.concat(classNameWhitelistExtended) : classNameWhitelist;
+
+  for (let className of classNames) {
+    let elements = document.querySelectorAll(className);
+    for (let element of elements) {
+      let newHtml = element.innerHTML.replace(
+        /(?<!\/)[A-Z]{2,}-\d{2,4}/gi,
+        (match) => {
+          console.log(`${match} for ${className}`)
+          return `<a target="_blank" style="color: ${linkColor}" href="https://jira.braze.com/browse/${match}">${match}</a>`
+        }
+      ).replace(
+        /(?<!\/)PLATFORM-\w{3}/gi,
+        (match) => {
+          console.log(`${match} for ${className}`)
+          return `<a target="_blank" style="color: ${linkColor}" href="https://sentry.io/organizations/braze/issues/?project=289509&query=${match}">${match}</a>`
+        }
+      );
+      element.innerHTML = newHtml;
     }
-  )
-  mainTitle.innerHTML = newHtml
+  }
+
+  // regex specs
+  // function run(strings, regex) {
+  //   for (str of strings) {
+  //     console.log(str.match(regex))
+  //   }
+  // }
+  // cases = ["AR-395", " AR-395 ", "[AR-395]", " [AR-395]", " /AR-395", "/AR-395", "stuff AR-395"]
+
 
   console.log("------------------------------ tamper end");
 })();
