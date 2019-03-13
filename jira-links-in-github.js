@@ -12,14 +12,14 @@
 (function() {
   'use strict';
 
-  // Your code here...
-  console.log("------------------------------ tamper start");
-
   const titles = document.getElementsByClassName('js-issue-title')
   const mainTitle = titles[0]
   const newHtml = mainTitle.innerHTML.replace(
-    /AR-395/gi,
-    "<a target='_blank' href='https://jira.braze.com/browse/AR-395'>AR-395</a>"
+    /[A-Z]{2}-\d{3}/gi,
+    (match) => {
+      console.log(match)
+      return `<a target="_blank" href="https://jira.braze.com/browse/${match}">${match}</a>`
+    }
   )
   mainTitle.innerHTML = newHtml
 
