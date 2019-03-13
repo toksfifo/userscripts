@@ -5,12 +5,25 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://tampermonkey.net/index.php?version=4.8&ext=dhdg&updated=true
-// @grant        none
+// @grant GM_openInTab
+// @grant GM_setValue
+// @grant GM_getValue
+// @grant GM_setClipboard
+// @grant unsafeWindow
+// @grant window.close
+// @grant window.focus
 // @include *
 // ==/UserScript==
 
 (function() {
+  console.log("------------------------------ tamper start");
   'use strict';
+
+  function openInNewTab(url) {
+    // const win = window.open(url, "_blank");
+    // win.focus();
+    GM_openInTab(url);
+  }
 
   const beta = false;
   const verbose = false;
@@ -35,11 +48,24 @@
   for (let className of classNames) {
     let elements = document.querySelectorAll(className);
     for (let element of elements) {
+      let hasLink = element.innerHTML.match("<a")
+      let linkHref = "google.com"
+      let linkBody = "stuff"
       let newHtml = element.innerHTML.replace(
         /(?<!\/)[A-Z]{2,}-\d{2,4}/gi,
         (match) => {
           console.log(`${match} for ${className}`)
-          return `<a target="_blank" style="color: ${linkColor}" href="https://jira.braze.com/browse/${match}">${match}</a>`
+          // return `<span onclick="openInNewTab(https://jira.braze.com/browse/${match})">${match}</span>`
+          // console.log(hasLink)
+          if (className === ".message.js-navigation-open" && beta) {
+            return `
+            </a>
+            <a target="_blank" style="color: ${linkColor}" href="https://jira.braze.com/browse/${match}">${match}</a>
+            <a href="${linkHref}">${linkBody}</a>
+            `
+          } else {
+            return `<a target="_blank" style="color: ${linkColor}" href="https://jira.braze.com/browse/${match}">${match}</a>`
+          }
         }
       ).replace(
         /(?<!\/)PLATFORM-\w{3}/gi,
@@ -68,11 +94,13 @@
 // <a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
 // class="message js-navigation-open" data-pjax="true"
 // href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3">
-//   DI-459 Send device_id to Currents for install/uninstall events (
+//   blah DI-459 Send device_id to Currents for install/uninstall events (
 // </a>
 
 // <a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
 // class="message js-navigation-open" data-pjax="true"
-// href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3"></a>
-//   <a href="blah">DI-459</a> <a href="oroginal">Send device_id to Currents for install/uninstall events (
+// href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3">
+//   blah</a>
+//   <a href="blah">DI-459</a>
+//   <a href="oroginal">Send device_id to Currents for install/uninstall events (
 // </a>
