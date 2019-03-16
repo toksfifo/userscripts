@@ -27,6 +27,41 @@
 
   const beta = false;
   const verbose = false;
+  const brazeProjects = [
+    "AGTR",
+    "AR",
+    "APPI",
+    "BD",
+    "PAR",
+    "DA",
+    "DI",
+    "DS",
+    "DES",
+    "TECHOPS",
+    "EMAIL",
+    "ENGR",
+    "TD",
+    "GDPR",
+    "GE",
+    "IC",
+    "AIML",
+    "IRT",
+    "ITTECH",
+    "IWD",
+    "MA",
+    "IO",
+    "PBUG",
+    "PI",
+    "PC",
+    "PROD",
+    "PGC",
+    "PDS",
+    "PF",
+    "IT",
+    "SEC",
+    "SS",
+    "SRE",
+  ]
 
   const linkColor = "#0366d6";
   // const linkColor = "rgb(215, 63, 133)"
@@ -44,6 +79,8 @@
   ];
 
   const classNames = beta ? classNameWhitelist.concat(classNameWhitelistExtended) : classNameWhitelist;
+  const jiraRegex = new RegExp(`(\\s|^|\\[)(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
+  const sentryRegex = new RegExp(`(\\s|^|\\[)PLATFORM-\\w{3}`, "gi");
 
   for (let className of classNames) {
     let elements = document.querySelectorAll(className);
@@ -52,7 +89,7 @@
       let linkHref = "google.com"
       let linkBody = "stuff"
       let newHtml = element.innerHTML.replace(
-        /(?<!\/)[A-Z]{2,}-\d{2,4}/gi,
+        jiraRegex,
         (match) => {
           console.log(`${match} for ${className}`)
           // return `<span onclick="openInNewTab(https://jira.braze.com/browse/${match})">${match}</span>`
@@ -68,7 +105,7 @@
           }
         }
       ).replace(
-        /(?<!\/)PLATFORM-\w{3}/gi,
+        sentryRegex,
         (match) => {
           console.log(`${match} for ${className}`)
           return `<a target="_blank" style="color: ${linkColor}" href="https://sentry.io/organizations/braze/issues/?project=289509&query=${match}">${match}</a>`
@@ -78,15 +115,23 @@
     }
   }
 
-  // regex specs
-  // function run(strings, regex) {
-  //   for (str of strings) {
-  //     console.log(str.match(regex))
-  //   }
-  // }
-  // cases = ["AR-395", " AR-395 ", "[AR-395]", " [AR-395]", " /AR-395", "/AR-395", "stuff AR-395"]
+  function tests(regex) {
+    console.log(`${"AR-395".match(regex).length == 1} for AR-395`)
+    console.log(`${" AR-395 ".match(regex).length == 1} for AR-395 `)
+    console.log(`${"[AR-395]".match(regex).length == 1} for [AR-395]`)
+    console.log(`${" [AR-395]".match(regex).length == 1} for [AR-395]`)
+    console.log(`${" /AR-395".match(regex) == null} for /AR-395`)
+    console.log(`${"/AR-395".match(regex) == null} for /AR-395`)
+    console.log(`${"stuff AR-395".match(regex).length == 1} for stuff AR-395`)
+    console.log(`${"https://jira.braze.com/browse/AR-395".match(regex) == null} for https://jira.braze.com/browse/AR-395`)
+    console.log(`${"https://jira.braze.com/browse/UAR-395".match(regex) == null} for https://jira.braze.com/browse/UAR-395`)
+    console.log(`${"boar-54".match(regex) == null} for boar-54`)
+    console.log(`${"AR-395 https://jira.braze.com/browse/AR-395".match(regex).length == 1} for AR-395 https://jira.braze.com/browse/AR-395`)
+    console.log(`${"/AR-42 AR-395 https://jira.braze.com/browse/AR-395".match(regex).length == 1} for /AR-42 AR-395 https://jira.braze.com/browse/AR-395`)
+    console.log(`${"AR-42 AR-395 https://jira.braze.com/browse/AR-395".match(regex).length == 2} for AR-42 AR-395 https://jira.braze.com/browse/AR-395`)
+  }
 
-
+  tests(jiraRegex)
   console.log("------------------------------ tamper end");
 })();
 
