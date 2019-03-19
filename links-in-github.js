@@ -79,8 +79,13 @@
   ];
 
   const classNames = beta ? classNameWhitelist.concat(classNameWhitelistExtended) : classNameWhitelist;
-  const jiraRegex = new RegExp(`(\\s|^|\\[)(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
-  const sentryRegex = new RegExp(`(\\s|^|\\[)PLATFORM-\\w{3}`, "gi");
+
+  // Not sure which strategy to use for starting characters: whitelist (first) or blacklist (second).
+  // const jiraRegex = new RegExp(`(?<=(\\s|^|\\[|(<li>)))(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
+  const jiraRegex = new RegExp(`(?<!(\/|[A-Z]))(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
+
+  // const sentryRegex = new RegExp(`(?<=(\\s|^|\\[|(<li>)))PLATFORM-\\w{3}`, "gi");
+  const sentryRegex = new RegExp(`(?<!([A-Z]))PLATFORM-\\w{3}`, "gi");
 
   for (let className of classNames) {
     let elements = document.querySelectorAll(className);
@@ -116,36 +121,39 @@
   }
 
   function tests(regex) {
-    console.log(`${"AR-395".match(regex).length == 1} for AR-395`)
-    console.log(`${" AR-395 ".match(regex).length == 1} for AR-395 `)
-    console.log(`${"[AR-395]".match(regex).length == 1} for [AR-395]`)
-    console.log(`${" [AR-395]".match(regex).length == 1} for [AR-395]`)
-    console.log(`${" /AR-395".match(regex) == null} for /AR-395`)
-    console.log(`${"/AR-395".match(regex) == null} for /AR-395`)
-    console.log(`${"stuff AR-395".match(regex).length == 1} for stuff AR-395`)
-    console.log(`${"https://jira.braze.com/browse/AR-395".match(regex) == null} for https://jira.braze.com/browse/AR-395`)
-    console.log(`${"https://jira.braze.com/browse/UAR-395".match(regex) == null} for https://jira.braze.com/browse/UAR-395`)
-    console.log(`${"boar-54".match(regex) == null} for boar-54`)
-    console.log(`${"AR-395 https://jira.braze.com/browse/AR-395".match(regex).length == 1} for AR-395 https://jira.braze.com/browse/AR-395`)
-    console.log(`${"/AR-42 AR-395 https://jira.braze.com/browse/AR-395".match(regex).length == 1} for /AR-42 AR-395 https://jira.braze.com/browse/AR-395`)
-    console.log(`${"AR-42 AR-395 https://jira.braze.com/browse/AR-395".match(regex).length == 2} for AR-42 AR-395 https://jira.braze.com/browse/AR-395`)
+    const strings = {
+      "AR-395": 1,
+      " AR-395 ": 1,
+      "[AR-395]": 1,
+      " [AR-395]": 1,
+      " /AR-395": 0,
+      "/AR-395": 0,
+      "stuff AR-395": 1,
+      "https://jira.braze.com/browse/AR-395": 0,
+      "https://jira.braze.com/browse/UAR-395": 0,
+      "boar-395": 0,
+      "AR-395 https://jira.braze.com/browse/AR-395": 1,
+      "/AR-395 AR-395 https://jira.braze.com/browse/AR-395": 1,
+      "AR-395 AR-395 https://jira.braze.com/browse/AR-395": 2,
+    }
+    for (let str in strings) {
+      let matches = str.match(regex)
+      let numberExpectatedMatches = strings[str]
+      if (numberExpectatedMatches == 0) {
+        console.log(`for ${str}: ${matches == null}`)
+      } else {
+        let correctString = true
+        for (let match of matches) {
+          if (match != "AR-395") {
+            correctString = false
+            break
+          }
+        }
+        console.log(`for ${str}: ${(matches.length == numberExpectatedMatches) && correctString}`)
+      }
+    }
   }
 
   tests(jiraRegex)
   console.log("------------------------------ tamper end");
 })();
-
-
-// <a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
-// class="message js-navigation-open" data-pjax="true"
-// href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3">
-//   blah DI-459 Send device_id to Currents for install/uninstall events (
-// </a>
-
-// <a aria-label="DI-459 Send device_id to Currents for install/uninstall events (#18644)"
-// class="message js-navigation-open" data-pjax="true"
-// href="/Appboy/platform/commit/25da0ee745327bb86f44b2ee073240591adff0e3">
-//   blah</a>
-//   <a href="blah">DI-459</a>
-//   <a href="oroginal">Send device_id to Currents for install/uninstall events (
-// </a>
