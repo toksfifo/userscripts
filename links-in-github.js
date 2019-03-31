@@ -82,10 +82,13 @@
 
   // Not sure which strategy to use for starting characters: whitelist (first) or blacklist (second).
   // const jiraRegex = new RegExp(`(?<=(\\s|^|\\[|(<li>)))(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
-  const jiraRegex = new RegExp(`(?<!(\/|[A-Z]))(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
+  const jiraRegex = new RegExp(`(\\s|^|\\[|<li>)((${brazeProjects.join("|")})-\\d{2,4})`, "gi");
+  // const jiraRegex = new RegExp(`\\s|^|\\[|(?:<li>)(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
+  // const jiraRegex = new RegExp(`(?<!(\/|[A-Z]))(${brazeProjects.join("|")})-\\d{2,4}`, "gi");
 
   // const sentryRegex = new RegExp(`(?<=(\\s|^|\\[|(<li>)))PLATFORM-\\w{3}`, "gi");
-  const sentryRegex = new RegExp(`(?<!([A-Z]))PLATFORM-\\w{3}`, "gi");
+  // const sentryRegex = new RegExp(`(?<!([A-Z]))PLATFORM-\\w{3}`, "gi");
+  const sentryRegex = new RegExp(`PLATFORM-\\w{3}`, "gi");
 
   for (let className of classNames) {
     let elements = document.querySelectorAll(className);
@@ -95,7 +98,14 @@
       let linkBody = "stuff"
       let newHtml = element.innerHTML.replace(
         jiraRegex,
-        (match) => {
+        (match, trash, id, project, offset, string) => {
+          console.log(match)
+          console.log(trash)
+          console.log(id)
+          console.log(project)
+          console.log(offset)
+          console.log(string)
+          debugger
           console.log(`${match} for ${className}`)
           // return `<span onclick="openInNewTab(https://jira.braze.com/browse/${match})">${match}</span>`
           // console.log(hasLink)
@@ -106,7 +116,7 @@
             <a href="${linkHref}">${linkBody}</a>
             `
           } else {
-            return `<a target="_blank" style="color: ${linkColor}" href="https://jira.braze.com/browse/${match}">${match}</a>`
+            return `${trash}<a target="_blank" style="color: ${linkColor}" href="https://jira.braze.com/browse/${id}">${id}</a>`
           }
         }
       ).replace(
