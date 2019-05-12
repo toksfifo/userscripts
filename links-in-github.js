@@ -16,15 +16,15 @@
 // ==/UserScript==
 
 (function() {
-  console.log("------------------------------ tamper start");
   'use strict';
+  const verbose = false;
+  log("------------------------------ tamper start");
 
   const beta = false;
-  const verbose = false;
   const brazeProjects = [
     "AGTR", "AR", "APPI", "BD", "PAR", "DA", "DI", "DS", "DES", "TECHOPS", "EMAIL", "ENGR", "TD", "GDPR", "GE", "IC",
     "AIML", "IRT", "ITTECH", "IWD", "MA", "IO", "PBUG", "PI", "PC", "PROD", "PGC", "PDS", "PF", "IT", "SEC", "SS",
-    "SRE",
+    "SRE", "IR",
   ]
   const jiraUrlPrefix = "https://jira.braze.com/browse/";
   const sentryUrlPrefix = "https://sentry.io/organizations/braze/issues/?project=289509&query=";
@@ -98,10 +98,17 @@
     for (let input in inputToOutput) {
       let expectedOutput = inputToOutput[input]
       let output = input.replace(regex, jiraReplacement)
-      console.log(`${output === expectedOutput} for ${input}`)
+      log(`${output === expectedOutput} for ${input}`)
     }
   }
 
+  function log(string) {
+    if (!verbose) {
+      return
+    }
+    console.log(string)
+  }
+
   tests(jiraRegex)
-  console.log("------------------------------ tamper end");
+  log("------------------------------ tamper end");
 })();
